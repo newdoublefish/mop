@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using WebApi.Services;
+using System.IO;
+using System.Reflection;
 
 namespace WebApi
 {
@@ -37,6 +39,38 @@ namespace WebApi
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Powin Web API", Version = "v1" });
+
+                #region 读取xml信息
+
+                // 使用反射获取xml文件。并构造出文件的路径
+/*                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                // 启用xml注释. 该方法第二个参数启用控制器的注释，默认为false.
+                c.IncludeXmlComments(xmlPath, true);*/
+                #endregion
+
+                #region 启用swagger验证功能
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Description = "在下框中输入请求头中需要添加Jwt授权Token：Bearer Token",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    BearerFormat = "JWT",
+                    Scheme = "Bearer"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                    {
+                        {
+                            new OpenApiSecurityScheme{
+                                Reference = new OpenApiReference {
+                                            Type = ReferenceType.SecurityScheme,
+                                            Id = "Bearer"}
+                           },new string[] { }
+                        }
+                    });
+                #endregion
             });
 
             services.Configure<TokenManagement>(Configuration.GetSection("tokenManagement"));
