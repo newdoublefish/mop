@@ -17,6 +17,8 @@ using System.Text;
 using WebApi.Services;
 using System.IO;
 using System.Reflection;
+using WebApi.Profiles;
+using AutoMapper;
 
 namespace WebApi
 {
@@ -25,14 +27,30 @@ namespace WebApi
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
+            Fsql = new FreeSql.FreeSqlBuilder()
+                .UseConnectionString(FreeSql.DataType.PostgreSQL, @"Host=47.107.182.100;Port=7432;Username=powin;Password=hello12345; Database=powin;Pooling=true;Minimum Pool Size=1")
+                .UseAutoSyncStructure(true)
+                .Build();
+
+            Fsql.Aop.CurdAfter += (s, e) =>
+            {
+                if (e.ElapsedMilliseconds > 200)
+                {
+                    //记录日志
+                    //发送短信给负责人
+                }
+            };
         }
 
+        public IFreeSql Fsql { get; }
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
+            services.AddAutoMapper(typeof(CustomMapper));
+            services.AddSingleton<IFreeSql>(Fsql);
             services.AddControllers();
             services.AddScoped<IAuthenticateService, AuthenticateService>();
 
