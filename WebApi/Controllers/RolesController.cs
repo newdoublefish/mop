@@ -13,50 +13,50 @@ namespace WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DepartmentsController : ControllerBase
+    public class RolesController : ControllerBase
     {
         IFreeSql _fsql;
         private readonly IMapper _mapper;
 
-        public DepartmentsController(IFreeSql fsql, IMapper mapper)
+        public RolesController(IFreeSql fsql, IMapper mapper)
         {
             _fsql = fsql;
             _mapper = mapper;
         }
 
         /// <summary>
-        /// create department
+        /// create role
         /// </summary>
         /// <param name="requestDto"></param>
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        public async Task<DepartmentResponseDto> Create([FromBody] DepartmentCreateRequestDto requestDto)
+        public async Task<RoleResponseDto> Create([FromBody] RoleCreateRequestDto requestDto)
         {
-            var department = _mapper.Map<Department>(requestDto);
-            department.CreatedAt = DateTime.Now;
-            var ret = await _fsql.Insert(department).ExecuteInsertedAsync();
-            return _mapper.Map<DepartmentResponseDto>(ret.FirstOrDefault());
+            var role = _mapper.Map<Role>(requestDto);
+            role.CreatedAt = DateTime.Now;
+            var ret = await _fsql.Insert(role).ExecuteInsertedAsync();
+            return _mapper.Map<RoleResponseDto>(ret.FirstOrDefault());
         }
 
-
         /// <summary>
-        /// list department
+        /// list roles
         /// </summary>
         /// <param name="name"></param>
-        /// <param name="parentId"></param>
         /// <param name="page"></param>
         /// <param name="size"></param>
         /// <returns></returns>
         [HttpGet]
         [AllowAnonymous]
-        public async Task<List<Department>> List([FromQuery] string name, int parentId, int page=1, int size=30) {
-            return await _fsql.Select<Department>()
-                .WhereIf(parentId != 0, d => d.ParentId == parentId)
+        public async Task<List<Role>> List([FromQuery] string name, int page = 1, int size = 30)
+        {
+            return await _fsql.Select<Role>()
                 .WhereIf(name != null, d => d.Name.Contains(name))
                 .Count(out var total)
                 .Page(page, size)
                 .ToListAsync();
         }
+
+
     }
 }

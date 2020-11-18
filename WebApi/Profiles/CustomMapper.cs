@@ -15,6 +15,8 @@ namespace WebApi.Profiles
             CreateMap<UserCreateRequestDto, User>();
             CreateMap<DepartmentCreateRequestDto, Department>();
             CreateMap<Department, DepartmentResponseDto>();
+            CreateMap<RoleCreateRequestDto, Role>();
+            CreateMap<Role, RoleResponseDto>();
         }
     }
 }
