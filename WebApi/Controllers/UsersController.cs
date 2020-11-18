@@ -28,7 +28,6 @@ namespace WebApi.Controllers
         [AllowAnonymous]
         async public Task<ActionResult> Create([FromBody] UserCreateRequestDto model)
         {
-            /*var ret = await _fsql.Insert<User>().AppendData(new Song { Title = model.title }).ExecuteInsertedAsync();*/
             var repo = _fsql.GetRepository<User>();
             User user = _mapper.Map<User>(model);
             await repo.InsertAsync(user);
@@ -37,9 +36,9 @@ namespace WebApi.Controllers
 
         [HttpGet]
         [Authorize]
-        public Task<List<User>> GetItems([FromQuery] string key, [FromQuery] int page = 1, [FromQuery] int limit = 20)
+        public Task<List<User>> List([FromQuery] string key, [FromQuery] int page = 1, [FromQuery] int size = 20)
         {
-            return _fsql.Select<User>().WhereIf(!string.IsNullOrEmpty(key), a => a.UserName.Contains(key)).Page(page, limit).ToListAsync();
+            return _fsql.Select<User>().WhereIf(!string.IsNullOrEmpty(key), a => a.UserName.Contains(key)).Page(page, size).ToListAsync();
         }
     }
 }
