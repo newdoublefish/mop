@@ -36,6 +36,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public Task<List<User>> GetItems([FromQuery] string key, [FromQuery] int page = 1, [FromQuery] int limit = 20)
         {
             return _fsql.Select<User>().WhereIf(!string.IsNullOrEmpty(key), a => a.UserName.Contains(key)).Page(page, limit).ToListAsync();
