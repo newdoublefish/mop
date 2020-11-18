@@ -13,6 +13,7 @@ namespace WebApi.Profiles
         public CustomMapper()
         {
             CreateMap<UserCreateRequestDto, User>();
+            CreateMap<User, UserResponseDto>();
             CreateMap<DepartmentCreateRequestDto, Department>();
             CreateMap<Department, DepartmentResponseDto>();
             CreateMap<RoleCreateRequestDto, Role>();
