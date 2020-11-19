@@ -58,5 +58,19 @@ namespace WebApi.Controllers
         }
 
 
+        /// <summary>
+        /// 删除指定角色
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("{id}"), ProducesResponseType(204)]
+        [AllowAnonymous]
+        async public Task<RoleResponseDto> Delete([FromRoute] int id)
+        {
+            var ret = await _fsql.Delete<Role>().Where(a => a.Id == id).ExecuteDeletedAsync();
+            return _mapper.Map<RoleResponseDto>(ret.FirstOrDefault());
+        }
+
+
     }
 }

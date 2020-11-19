@@ -115,5 +115,24 @@ namespace WebApi.Controllers
                     });
             return user;
         }
+
+
+        /// <summary>
+        /// 删除指定用户
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("{id}"), ProducesResponseType(204)]
+        [AllowAnonymous]
+        async public Task<RoleResponseDto> Delete([FromRoute] int id)
+        {
+            using (var uow = _fsql.CreateUnitOfWork()) //使用 UnitOfWork 事务
+            {
+                var ret = await _fsql.Delete<Role>().Where(a => a.Id == id).ExecuteDeletedAsync();
+                var userRole = await _fsql.Delete<UserRole>().Where(a => a.UserId == ret.FirstOrDefault().Id).ExecuteDeletedAsync();
+                uow.Commit();
+                return _mapper.Map<RoleResponseDto>(ret.FirstOrDefault());
+            }
+        }
     }
 }

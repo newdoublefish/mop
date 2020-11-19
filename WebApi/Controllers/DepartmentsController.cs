@@ -58,5 +58,22 @@ namespace WebApi.Controllers
                 .Page(page, size)
                 .ToListAsync();
         }
+
+
+        /// <summary>
+        /// 删除指定部门
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("{id}"), ProducesResponseType(204)]
+        [AllowAnonymous]
+        async public Task<DepartmentResponseDto> Delete([FromRoute] int id)
+        {
+            var ret = await _fsql.Delete<Department>().Where(a => a.Id == id).ExecuteDeletedAsync();
+            return _mapper.Map<DepartmentResponseDto>(ret.FirstOrDefault());
+        }
+
+
+
     }
 }
