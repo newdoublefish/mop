@@ -98,7 +98,7 @@ namespace WebApi.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<UserResponseDto> GetById([FromRoute] int id)
         {
