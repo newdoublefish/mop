@@ -75,21 +75,45 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpGet]
         [AllowAnonymous]
-        public Task<List<UserResponseDto>> List([FromQuery] string key, [FromQuery] int page = 1, [FromQuery] int size = 20)
+        public async Task<List<UserResponseDto>> List([FromQuery] string key, [FromQuery] int page = 1, [FromQuery] int size = 20)
         {
-            var list = _fsql.Select<User>().From<Department, UserRole, Role>((u, d, ur, r) => u
+            var list = await _fsql.Select<User>().From<Department, UserRole, Role>((u, d, ur, r) => u
                         .LeftJoin(a => a.DepartmentId == d.Id)
                         .LeftJoin(a => a.Id == ur.UserId)
                         .LeftJoin(a => ur.RoleId == r.Id))
                     .WhereIf(!string.IsNullOrEmpty(key), (u, d, ur, r) => u.UserName.Contains(key))
                     .Page(page, size)
                     .Count(out var total)
-                    .ToListAsync((u, d, ur, r) =>new UserResponseDto { 
+                    .ToListAsync((u, d, ur, r) => new UserResponseDto
+                    {
                         Id = u.Id,
                         DepartmentName = d.Name,
                         RoleName = r.Name,
                     });
             return list;
+        }
+
+        /// <summary>
+        /// 获取指定ID的用户
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("id")]
+        [AllowAnonymous]
+        public async Task<UserResponseDto> GetById([FromRoute] int id)
+        {
+            var user = await _fsql.Select<User>().From<Department, UserRole, Role>((u, d, ur, r) => u
+                        .LeftJoin(a => a.DepartmentId == d.Id)
+                        .LeftJoin(a => a.Id == ur.UserId)
+                        .LeftJoin(a => ur.RoleId == r.Id))
+                    .WhereIf(id > 0, (u, d, ur, r) => u.Id == id)
+                    .FirstAsync((u, d, ur, r) => new UserResponseDto
+                    {
+                        Id = u.Id,
+                        DepartmentName = d.Name,
+                        RoleName = r.Name,
+                    });
+            return user;
         }
     }
 }
