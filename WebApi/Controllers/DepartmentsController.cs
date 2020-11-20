@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Common.Output;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -31,12 +32,12 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        public async Task<DepartmentResponseDto> Create([FromBody] DepartmentCreateRequestDto requestDto)
+        public async Task<IResponseOutput> Create([FromBody] DepartmentCreateRequestDto requestDto)
         {
             var department = _mapper.Map<Department>(requestDto);
             department.CreatedAt = DateTime.Now;
             var ret = await _fsql.Insert(department).ExecuteInsertedAsync();
-            return _mapper.Map<DepartmentResponseDto>(ret.FirstOrDefault());
+            return ResponseOutput.Ok(_mapper.Map<DepartmentResponseDto>(ret.FirstOrDefault()));
         }
 
 
@@ -50,13 +51,14 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpGet]
         [AllowAnonymous]
-        public async Task<List<Department>> List([FromQuery] string name, int parentId, int page=1, int size=30) {
-            return await _fsql.Select<Department>()
+        public async Task<IResponseOutput> List([FromQuery] string name, int parentId, int page=1, int size=30) {
+            var departmentList = await _fsql.Select<Department>()
                 .WhereIf(parentId != 0, d => d.ParentId == parentId)
                 .WhereIf(name != null, d => d.Name.Contains(name))
                 .Count(out var total)
                 .Page(page, size)
                 .ToListAsync();
+            return ResponseOutput.Ok(new Pagenation<Department> { Total = total, List = departmentList ,Page=page, Size=size});
         }
 
 
@@ -67,10 +69,10 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpDelete("{id}"), ProducesResponseType(204)]
         [AllowAnonymous]
-        async public Task<DepartmentResponseDto> Delete([FromRoute] int id)
+        async public Task<IResponseOutput> Delete([FromRoute] int id)
         {
             var ret = await _fsql.Delete<Department>().Where(a => a.Id == id).ExecuteDeletedAsync();
-            return _mapper.Map<DepartmentResponseDto>(ret.FirstOrDefault());
+            return ResponseOutput.Ok(_mapper.Map<DepartmentResponseDto>(ret.FirstOrDefault()));
         }
 
 
