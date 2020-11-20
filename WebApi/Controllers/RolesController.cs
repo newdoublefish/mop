@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Common.Output;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -31,12 +32,12 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        public async Task<RoleResponseDto> Create([FromBody] RoleCreateRequestDto requestDto)
+        public async Task<IResponseOutput> Create([FromBody] RoleCreateRequestDto requestDto)
         {
             var role = _mapper.Map<Role>(requestDto);
             role.CreatedAt = DateTime.Now;
             var ret = await _fsql.Insert(role).ExecuteInsertedAsync();
-            return _mapper.Map<RoleResponseDto>(ret.FirstOrDefault());
+            return ResponseOutput.Ok(_mapper.Map<RoleResponseDto>(ret.FirstOrDefault()));
         }
 
         /// <summary>
@@ -48,13 +49,14 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpGet]
         [AllowAnonymous]
-        public async Task<List<Role>> List([FromQuery] string name, int page = 1, int size = 30)
+        public async Task<IResponseOutput> List([FromQuery] string name, int page = 1, int size = 30)
         {
-            return await _fsql.Select<Role>()
+            var list = await _fsql.Select<Role>()
                 .WhereIf(name != null, d => d.Name.Contains(name))
                 .Count(out var total)
                 .Page(page, size)
                 .ToListAsync();
+            return ResponseOutput.Ok(new Pagenation<Role> { Page = page, Size = size, Total = total, List = list });
         }
 
 
@@ -65,10 +67,10 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpDelete("{id}"), ProducesResponseType(204)]
         [AllowAnonymous]
-        async public Task<RoleResponseDto> Delete([FromRoute] int id)
+        async public Task<IResponseOutput> Delete([FromRoute] int id)
         {
             var ret = await _fsql.Delete<Role>().Where(a => a.Id == id).ExecuteDeletedAsync();
-            return _mapper.Map<RoleResponseDto>(ret.FirstOrDefault());
+            return ResponseOutput.Ok(_mapper.Map<RoleResponseDto>(ret.FirstOrDefault()));
         }
 
 

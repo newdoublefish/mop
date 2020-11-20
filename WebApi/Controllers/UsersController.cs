@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Common.Output;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +32,7 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpPost, ProducesResponseType(201)]
         [AllowAnonymous]
-        async public Task<UserResponseDto> Create([FromBody] UserCreateRequestDto requestDto)
+        async public Task<IResponseOutput> Create([FromBody] UserCreateRequestDto requestDto)
         {
             Department department = await _fsql.Select<Department>().Where(d => d.Id == requestDto.DepartmentId).FirstAsync();
             if (department == null)
@@ -62,7 +63,7 @@ namespace WebApi.Controllers
                 responseDto.RoleId = role.Id;
                 responseDto.RoleName = role.Name;
                 responseDto.DepartmentName = department.Name;
-                return responseDto;
+                return ResponseOutput.Ok(responseDto);
             }
         }
 
@@ -75,7 +76,7 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpGet]
         [AllowAnonymous]
-        public async Task<List<UserResponseDto>> List([FromQuery] string key, [FromQuery] int page = 1, [FromQuery] int size = 20)
+        public async Task<IResponseOutput> List([FromQuery] string key, [FromQuery] int page = 1, [FromQuery] int size = 20)
         {
             var list = await _fsql.Select<User>().From<Department, UserRole, Role>((u, d, ur, r) => u
                         .LeftJoin(a => a.DepartmentId == d.Id)
@@ -90,7 +91,7 @@ namespace WebApi.Controllers
                         DepartmentName = d.Name,
                         RoleName = r.Name,
                     });
-            return list;
+            return ResponseOutput.Ok(new Pagenation<UserResponseDto> { Page = page, Size = size, Total=total, List = list});
         }
 
         /// <summary>
@@ -100,7 +101,7 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<UserResponseDto> GetById([FromRoute] int id)
+        public async Task<IResponseOutput> GetById([FromRoute] int id)
         {
             var user = await _fsql.Select<User>().From<Department, UserRole, Role>((u, d, ur, r) => u
                         .LeftJoin(a => a.DepartmentId == d.Id)
@@ -113,7 +114,7 @@ namespace WebApi.Controllers
                         DepartmentName = d.Name,
                         RoleName = r.Name,
                     });
-            return user;
+            return ResponseOutput.Ok(user);
         }
 
 
@@ -124,14 +125,14 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpDelete("{id}"), ProducesResponseType(204)]
         [AllowAnonymous]
-        async public Task<RoleResponseDto> Delete([FromRoute] int id)
+        async public Task<IResponseOutput> Delete([FromRoute] int id)
         {
             using (var uow = _fsql.CreateUnitOfWork()) //使用 UnitOfWork 事务
             {
                 var ret = await _fsql.Delete<Role>().Where(a => a.Id == id).ExecuteDeletedAsync();
                 var userRole = await _fsql.Delete<UserRole>().Where(a => a.UserId == ret.FirstOrDefault().Id).ExecuteDeletedAsync();
                 uow.Commit();
-                return _mapper.Map<RoleResponseDto>(ret.FirstOrDefault());
+                return ResponseOutput.Ok(_mapper.Map<RoleResponseDto>(ret.FirstOrDefault()));
             }
         }
     }
