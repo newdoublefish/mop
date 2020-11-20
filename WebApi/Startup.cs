@@ -22,6 +22,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Diagnostics;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http;
+using WebApi.Filters;
 
 namespace WebApi
 {
@@ -54,7 +55,16 @@ namespace WebApi
         {
             services.AddAutoMapper(typeof(CustomMapper));
             services.AddSingleton<IFreeSql>(Fsql);
-            services.AddControllers();
+            services.AddControllers(options =>
+            {
+                options.Filters.Add<CustomExceptionFilter>();
+/*                if (_appConfig.Log.Operation)
+                {
+                    options.Filters.Add<LogActionFilter>();
+                }*/
+                //½ûÖ¹È¥³ýActionAsyncºó×º
+                options.SuppressAsyncSuffixInActionNames = false;
+            });
             services.AddScoped<IAuthenticateService, AuthenticateService>();
 
             services.AddSwaggerGen(c =>
