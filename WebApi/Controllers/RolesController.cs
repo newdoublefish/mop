@@ -69,8 +69,15 @@ namespace WebApi.Controllers
         [AllowAnonymous]
         async public Task<IResponseOutput> Delete([FromRoute] int id)
         {
-            var ret = await _fsql.Delete<Role>().Where(a => a.Id == id).ExecuteDeletedAsync();
-            return ResponseOutput.Ok(_mapper.Map<RoleResponseDto>(ret.FirstOrDefault()));
+            using (var uow = _fsql.CreateUnitOfWork()) //使用 UnitOfWork 事务
+            {
+                //删除用户角色关系
+                await _fsql.Delete<UserRole>().Where(ur => ur.RoleId == id).ExecuteDeletedAsync();
+                //删除角色关系
+                var ret = await _fsql.Delete<Role>().Where(a => a.Id == id).ExecuteDeletedAsync();
+                uow.Commit();
+                return ResponseOutput.Ok(_mapper.Map<RoleResponseDto>(ret.FirstOrDefault()));
+            }
         }
 
 
