@@ -81,13 +81,13 @@ namespace WebApi.Models
         /// </summary>
         public int TotalLength { get; set; }
         /// <summary>
-        /// 等待类型(单独表)
+        /// 异常类型(单独表)
         /// </summary>
-        public string WaitType { get; set; }
+        public string ExceptionType { get; set; }
         /// <summary>
-        /// 等待时间
+        /// 异常时间
         /// </summary>
-        public DateTime WaitTime { get; set; }
+        public DateTime ExceptionTime { get; set; }
         /// <summary>
         /// 备注
         /// </summary>
