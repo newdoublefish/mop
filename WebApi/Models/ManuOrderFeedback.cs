@@ -39,7 +39,7 @@ namespace WebApi.Models
         /// <summary>
         /// 产前确认
         /// </summary>
-        public int Confirm { get; set; }
+        public string Confirm { get; set; }
         /// <summary>
         /// 开始时间
         /// </summary>
@@ -83,7 +83,7 @@ namespace WebApi.Models
         /// <summary>
         /// 等待类型(单独表)
         /// </summary>
-        public int WaitType { get; set; }
+        public string WaitType { get; set; }
         /// <summary>
         /// 等待时间
         /// </summary>
