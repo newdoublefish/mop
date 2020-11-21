@@ -16,7 +16,7 @@ namespace WebApi.Dtos
         [Required(ErrorMessage = "部门不能为空")]
         public int DepartmentId { get; set; }
         [Required(ErrorMessage = "角色不能为空")]
-        public int RoleId { get; set; }
+        public int[] RoleIds { get; set; }
         public DateTime BirthDay { get; set; }
         public int Gender { get; set; }
         public int Status { get; set; }

@@ -17,5 +17,11 @@ namespace WebApi.Models
         public DateTime BirthDay { get; set; }
         public int Gender { get; set; }
         public int Status { get; set; }
+
+        [Navigate(nameof(DepartmentId))]
+        public Department Department { get; set; }
+
+        [Navigate(ManyToMany = typeof(UserRole))]
+        public ICollection<Role> Roles { get; set; }
     }
 }

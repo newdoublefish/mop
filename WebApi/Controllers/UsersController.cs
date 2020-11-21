@@ -39,11 +39,11 @@ namespace WebApi.Controllers
             {
                 throw new ArgumentException("无该部门");
             }
-            Role role = await _fsql.Select<Role>().Where(r => r.Id == requestDto.RoleId).FirstAsync();
+/*            Role role = await _fsql.Select<Role>().Where(r => r.Id == requestDto.RoleId).FirstAsync();
             if (role == null)
             {
                 throw new ArgumentException("无该职位");
-            }
+            }*/
 
             if (await _fsql.Select<User>().Where(u => u.UserName == requestDto.UserName).CountAsync() > 0)
             {
@@ -56,12 +56,23 @@ namespace WebApi.Controllers
                 user.CreatedAt = DateTime.Now;
                 var ret = await _fsql.Insert(user).WithTransaction(uow.GetOrBeginTransaction()).ExecuteInsertedAsync();
                 user = ret.FirstOrDefault();
-                var userRole = await _fsql.Insert(new UserRole { UserId = user.Id, RoleId = role.Id, CreatedAt = DateTime.Now })
-                    .WithTransaction(uow.GetOrBeginTransaction()).ExecuteInsertedAsync();
+/*                var userRole = await _fsql.Insert(new UserRole { UserId = user.Id, RoleId = role.Id, CreatedAt = DateTime.Now })
+                    .WithTransaction(uow.GetOrBeginTransaction()).ExecuteInsertedAsync();*/
+                if (!(user?.Id > 0))
+                {
+                    return ResponseOutput.NotOk();
+                }
+
+                if (requestDto.RoleIds != null && requestDto.RoleIds.Any()) {
+                    var userRoles = requestDto.RoleIds.Select(r => new UserRole { UserId=user.Id, RoleId=r });
+                    var userRolesRet = await _fsql.Insert(userRoles).WithTransaction(uow.GetOrBeginTransaction()).ExecuteInsertedAsync();
+                }
+
                 var responseDto = _mapper.Map<UserResponseDto>(user);
                 uow.Commit();
-                responseDto.RoleId = role.Id;
-                responseDto.RoleName = role.Name;
+
+/*                responseDto.RoleId = role.Id;
+                responseDto.RoleName = role.Name;*/
                 responseDto.DepartmentName = department.Name;
                 return ResponseOutput.Ok(responseDto);
             }
@@ -78,20 +89,13 @@ namespace WebApi.Controllers
         [AllowAnonymous]
         public async Task<IResponseOutput> List([FromQuery] string key, [FromQuery] int page = 1, [FromQuery] int size = 20)
         {
-            var list = await _fsql.Select<User>().From<Department, UserRole, Role>((u, d, ur, r) => u
-                        .LeftJoin(a => a.DepartmentId == d.Id)
-                        .LeftJoin(a => a.Id == ur.UserId)
-                        .LeftJoin(a => ur.RoleId == r.Id))
-                    .WhereIf(!string.IsNullOrEmpty(key), (u, d, ur, r) => u.UserName.Contains(key))
+            var list = await _fsql.Select<User>().IncludeMany(u=>u.Roles)
+                    .Include(a=> a.Department)
+                    .WhereIf(!string.IsNullOrEmpty(key), (u) => u.UserName.Contains(key))
                     .Page(page, size)
                     .Count(out var total)
-                    .ToListAsync((u, d, ur, r) => new UserResponseDto
-                    {
-                        Id = u.Id,
-                        DepartmentName = d.Name,
-                        RoleName = r.Name,
-                    });
-            return ResponseOutput.Ok(new Pagenation<UserResponseDto> { Page = page, Size = size, Total=total, List = list});
+                    .ToListAsync();
+            return ResponseOutput.Ok(new Pagenation<User> { Page = page, Size = size, Total=total, List = list});
         }
 
         /// <summary>
