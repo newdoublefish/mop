@@ -18,6 +18,8 @@ namespace WebApi.Profiles
             CreateMap<Department, DepartmentResponseDto>();
             CreateMap<RoleCreateRequestDto, Role>();
             CreateMap<Role, RoleResponseDto>();
+            CreateMap<WorkTypeCreateRequestDto, WorkType>();
+            CreateMap<WorkType, WorkTypeResponseDto>();
         }
     }
 }
