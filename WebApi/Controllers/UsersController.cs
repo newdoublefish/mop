@@ -133,10 +133,9 @@ namespace WebApi.Controllers
         {
             using (var uow = _fsql.CreateUnitOfWork()) //使用 UnitOfWork 事务
             {
-                var ret = await _fsql.Delete<Role>().Where(a => a.Id == id).ExecuteDeletedAsync();
-                var userRole = await _fsql.Delete<UserRole>().Where(a => a.UserId == ret.FirstOrDefault().Id).ExecuteDeletedAsync();
+                var ret = await _fsql.Delete<User>().Where(a => a.Id == id).ExecuteDeletedAsync();
                 uow.Commit();
-                return ResponseOutput.Ok(_mapper.Map<RoleResponseDto>(ret.FirstOrDefault()));
+                return ResponseOutput.Ok(_mapper.Map<UserResponseDto>(ret.FirstOrDefault()));
             }
         }
     }
