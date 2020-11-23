@@ -15,17 +15,23 @@ namespace WebApi.Services
     public class AuthenticateService : IAuthenticateService
     {
         private readonly TokenManagement _tokenManagement;
+        IFreeSql _fsql;
 
-        public AuthenticateService(IOptions<TokenManagement> tokenManagement)
+        public AuthenticateService(IOptions<TokenManagement> tokenManagement, IFreeSql fsql)
         {
             _tokenManagement = tokenManagement.Value;
+            _fsql = fsql;
         }
 
         public bool IsAuthenticated(LoginRequestDto request, out string token)
         {
             token = string.Empty;
-/*            if (!_userService.IsValid(request))
-                return false;*/
+            /*            if (!_userService.IsValid(request))
+                            return false;*/
+            User user = _fsql.Select<User>().Where(u => u.UserName.Equals(request.Username) && u.Password.Equals(request.Password)).First();
+            if (user == null) {
+                return false;
+            }
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name,request.Username)

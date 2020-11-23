@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Common.Output;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -23,20 +24,20 @@ namespace WebApi.Controllers
 
         [AllowAnonymous]
         [HttpPost, Route("requestToken")]
-        public ActionResult RequestToken([FromBody] LoginRequestDto request)
+        public IResponseOutput RequestToken([FromBody] LoginRequestDto request)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest("Invalid Request");
+                return ResponseOutput.NotOk("Invalid Request");
             }
 
             string token;
             if (_authService.IsAuthenticated(request, out token))
             {
-                return Ok(token);
+                return ResponseOutput.Ok(token);
             }
 
-            return BadRequest("Invalid Request");
+            return ResponseOutput.NotOk("Invalid Request");
 
         }
     }
