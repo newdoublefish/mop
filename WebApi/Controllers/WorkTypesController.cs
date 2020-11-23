@@ -37,6 +37,23 @@ namespace WebApi.Controllers
             return ResponseOutput.Ok(new Pagenation<WorkType> { Page = page, Size = size, Total = total, List = list });
         }
 
+        [HttpGet("{id}")]
+        [AllowAnonymous]
+        public async Task<IResponseOutput> GetById([FromRoute] int id)
+        {
+            WorkType workType = await _fsql.Select<WorkType>()
+                  .Where(w => w.Id == id)
+                  .IncludeMany(w => w.Childs)
+                  .Include(w => w.Parent)
+                  //.AsTreeCte()
+                  .FirstAsync();
+            if (workType == null)
+            {
+                return ResponseOutput.NotOk($"未找到ID为{id}的工作类型");
+            }
+            return ResponseOutput.Ok(_mapper.Map<WorkTypeResponseDto>(workType));
+        }
+
         /// <summary>
         /// create department
         /// </summary>
