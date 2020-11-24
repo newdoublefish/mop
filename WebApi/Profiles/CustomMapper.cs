@@ -24,6 +24,9 @@ namespace WebApi.Profiles
             CreateMap<ProcedureCreateRequestDto, Procedure>();
             CreateMap<Procedure, ProcedureResponseDto>();
 
+            CreateMap<WireRodTypeCreateRequestDto, WireRodType>();
+            CreateMap<WireRodType, WireRodTypeResponseDto>();
+
         }
     }
 }
