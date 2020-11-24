@@ -20,6 +20,10 @@ namespace WebApi.Profiles
             CreateMap<Role, RoleResponseDto>();
             CreateMap<WorkTypeCreateRequestDto, WorkType>();
             CreateMap<WorkType, WorkTypeResponseDto>();
+
+            CreateMap<ProcedureCreateRequestDto, Procedure>();
+            CreateMap<Procedure, ProcedureResponseDto>();
+
         }
     }
 }
