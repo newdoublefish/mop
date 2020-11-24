@@ -29,7 +29,7 @@ namespace WebApi.Controllers
         [AllowAnonymous]
         async public Task<IResponseOutput> Create([FromBody] WireRodTypeCreateRequestDto requestDto)
         {
-            var workType = await _fsql.Select<WireRodType>().Where(w => w.Id == requestDto.WorkTypeId).FirstAsync();
+            var workType = await _fsql.Select<WorkType>().Where(w => w.Id == requestDto.WorkTypeId).FirstAsync();
             if (workType == null)
             {
                 return ResponseOutput.NotOk($"worktype with id(${requestDto.WorkTypeId}) does not exsit");
