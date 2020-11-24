@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApi.Models;
 
-namespace WebApi.Models
+namespace WebApi.Dtos
 {
-    public class ExceptionType: BaseEntity
+    public class ExceptionTypeResponseDto : BaseDto
     {
         public string Name { get; set; }
-        public string Description { get; set; }
+        public String Description { get; set; }
     }
 }
