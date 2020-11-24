@@ -23,7 +23,7 @@ namespace WebApi.Models
         /// <summary>
         /// 类型(单独表)：1设备性（自动机/半自动机/注塑） 2 劳动密集型 3 全检以及OQC
         /// </summary>
-        public int WorkType { get; set; }
+        public int WorkTypeId { get; set; }
         /// <summary>
         /// 组别特殊项1
         /// </summary>
@@ -59,11 +59,11 @@ namespace WebApi.Models
         /// <summary>
         /// 工序(单独表) 与类型workType相关
         /// </summary>
-        public int Procedure { get; set; }
+        public int ProcedureId { get; set; }
         /// <summary>
         /// 线材类型(单独表) 与类型workType相关
         /// </summary>
-        public int WireRodType { get; set; }
+        public int WireRodTypeId { get; set; }
         /// <summary>
         /// 单品数量
         /// </summary>
@@ -83,7 +83,7 @@ namespace WebApi.Models
         /// <summary>
         /// 异常类型(单独表)
         /// </summary>
-        public string ExceptionType { get; set; }
+        public string ExceptionTypeId { get; set; }
         /// <summary>
         /// 异常时间
         /// </summary>
@@ -116,5 +116,9 @@ namespace WebApi.Models
         /// 周末加班时间
         /// </summary>
         public DateTime WeekendWorkOverTime { get; set; }
+        /// <summary>
+        /// 状态
+        /// </summary>
+        public int Status { get; set; }
     }
 }

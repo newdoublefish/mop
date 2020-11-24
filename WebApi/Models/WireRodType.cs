@@ -9,6 +9,6 @@ namespace WebApi.Models
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public int WorkType { get; set; }
+        public int WorkTypeId { get; set; }
     }
 }
