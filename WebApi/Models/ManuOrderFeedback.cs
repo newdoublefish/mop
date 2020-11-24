@@ -13,6 +13,10 @@ namespace WebApi.Models
         /// </summary>
         public string ManuOrder { get; set; }
         /// <summary>
+        /// 图号
+        /// </summary>
+        public string DrawingNumber { get; set; }
+        /// <summary>
         /// 制定单数量
         /// </summary>
         public int ManuOrderCount { get; set; }
