@@ -121,7 +121,7 @@ namespace WebApi.Models
         /// </summary>
         public DateTime WeekendWorkOverTime { get; set; }
         /// <summary>
-        /// 状态
+        /// 状态 0：未开始;1 已开始; 2 已完成; 3 无效
         /// </summary>
         public int Status { get; set; }
     }

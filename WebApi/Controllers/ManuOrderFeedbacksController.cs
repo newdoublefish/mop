@@ -29,7 +29,43 @@ namespace WebApi.Controllers
         [AllowAnonymous]
         async public Task<IResponseOutput> Create([FromBody] ManuOrderFeedbackCreateRequestDto requestDto)
         {
-            var ret = await _fsql.Insert(_mapper.Map<ManuOrderFeedback>(requestDto)).ExecuteInsertedAsync();
+            //检查工序, 其他大类等
+            //检查用户是否存在
+            var user = await _fsql.Select<User>().Where(u => u.Id == requestDto.UserId).FirstAsync();
+            if (user == null) {
+                return ResponseOutput.NotOk("用户不存在");
+            }
+
+            //检查工作类型
+            var workType = await _fsql.Select<WorkType>().Where(w => w.Id == requestDto.WorkTypeId).FirstAsync();
+            if (workType == null)
+            {
+                return ResponseOutput.NotOk("工作类型不存在");
+            }
+
+            //工作类型
+            if (requestDto.ProcedureId != 0) {
+                var procedure = await _fsql.Select<Procedure>().Where(p => p.Id == requestDto.ProcedureId).FirstAsync();
+                if (procedure == null)
+                {
+                    return ResponseOutput.NotOk("工序不存在");
+                }
+            }
+
+            //检查线材类型
+            if (requestDto.WireRodTypeId != 0) {
+                var wireRodType = await _fsql.Select<WireRodType>().Where(w => w.Id == requestDto.WireRodTypeId).FirstAsync();
+                if (wireRodType == null)
+                {
+                    return ResponseOutput.NotOk("线材类型不存在");
+                }
+            }
+            
+
+            var feedBack = _mapper.Map<ManuOrderFeedback>(requestDto);
+            feedBack.StartAt = DateTime.Now;
+            feedBack.Status = 1;
+            var ret = await _fsql.Insert(feedBack).ExecuteInsertedAsync();
             return ResponseOutput.Ok(ret.FirstOrDefault());
         }
 
