@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace WebApi.Dtos
 {
-    public class ManuOrderFeedBackFinishUpdateDto
+    public class ManuOrderFeedbackFinishUpdateDto
     {
         /// <summary>
         /// 结束时间
