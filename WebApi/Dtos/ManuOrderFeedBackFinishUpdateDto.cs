@@ -14,7 +14,7 @@ namespace WebApi.Dtos
         /// <summary>
         /// 异常类型(单独表)
         /// </summary>
-        public string ExceptionTypeId { get; set; }
+        public int ExceptionTypeId { get; set; }
         /// <summary>
         /// 异常时间
         /// </summary>

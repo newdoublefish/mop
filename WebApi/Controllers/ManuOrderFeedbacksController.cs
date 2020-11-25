@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApi.Dto;
+using WebApi.Dtos;
 using WebApi.Models;
 
 namespace WebApi.Controllers
@@ -66,6 +67,34 @@ namespace WebApi.Controllers
             feedBack.StartAt = DateTime.Now;
             feedBack.Status = 1;
             var ret = await _fsql.Insert(feedBack).ExecuteInsertedAsync();
+            return ResponseOutput.Ok(ret.FirstOrDefault());
+        }
+
+
+        [HttpPut]
+        [Route("{id}/finish")]
+        async public Task<IResponseOutput> Finish([FromRoute]int id, [FromBody]ManuOrderFeedbackFinishUpdateDto updateDto) {
+            var feedback = await _fsql.Select<ManuOrderFeedback>().Where(m => m.Id == id).FirstAsync();
+            if (feedback == null) {
+                return ResponseOutput.NotOk("报工单不存在");
+            }
+
+            //检查异常类型
+            if (updateDto.ExceptionTypeId != 0)
+            {
+                var exceptionType = await _fsql.Select<ExceptionType>().Where(e => e.Id == updateDto.ExceptionTypeId).FirstAsync();
+                if (exceptionType == null)
+                {
+                    return ResponseOutput.NotOk("异常类型不存在");
+                }
+            }
+
+            _mapper.Map(updateDto, feedback);
+
+            feedback.Status = 2;
+
+            var ret = await _fsql.Update<ManuOrderFeedback>().SetSource(feedback).ExecuteUpdatedAsync();
+
             return ResponseOutput.Ok(ret.FirstOrDefault());
         }
 
