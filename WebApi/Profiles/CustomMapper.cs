@@ -30,6 +30,9 @@ namespace WebApi.Profiles
             CreateMap<ExceptionTypeCreateRequestDto, ExceptionType>();
             CreateMap<ExceptionType, ExceptionTypeResponseDto>();
 
+            CreateMap<ManuOrderCreateRequestDto, ManuOrder>();
+            CreateMap<ManuOrder, ManuOrderResponseDto>();
+
         }
     }
 }
