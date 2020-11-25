@@ -24,10 +24,14 @@ namespace WebApi.Models
         /// 用户
         /// </summary>
         public int UserId { get; set; }
+
+        [Navigate(nameof(UserId))]
+        public User User { get; set; }
         /// <summary>
         /// 类型(单独表)：1设备性（自动机/半自动机/注塑） 2 劳动密集型 3 全检以及OQC
         /// </summary>
         public int WorkTypeId { get; set; }
+        public WorkType WorkType { get; set; }
         /// <summary>
         /// 组别特殊项1
         /// </summary>
@@ -64,10 +68,16 @@ namespace WebApi.Models
         /// 工序(单独表) 与类型workType相关
         /// </summary>
         public int ProcedureId { get; set; }
+
+        [Navigate(nameof(ProcedureId))]
+        public Procedure Procedure { get; set; }
         /// <summary>
         /// 线材类型(单独表) 与类型workType相关
         /// </summary>
         public int WireRodTypeId { get; set; }
+
+        [Navigate(nameof(WireRodTypeId))]
+        public WireRodType WireRodType { get; set; }
         /// <summary>
         /// 单品数量
         /// </summary>
@@ -87,7 +97,11 @@ namespace WebApi.Models
         /// <summary>
         /// 异常类型(单独表)
         /// </summary>
-        public string ExceptionTypeId { get; set; }
+        [Column(DbType = "int")]
+        public int ExceptionTypeId { get; set; }
+
+        [Navigate(nameof(ExceptionTypeId))]
+        public ExceptionType ExceptionType { get; set; }
         /// <summary>
         /// 异常时间
         /// </summary>

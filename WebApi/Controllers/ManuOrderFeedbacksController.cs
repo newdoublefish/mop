@@ -105,6 +105,11 @@ namespace WebApi.Controllers
         async public Task<IResponseOutput> List([FromQuery] int page, int size)
         {
             var list = await _fsql.Select<ManuOrderFeedback>()
+                .Include(m=>m.WorkType)
+                .Include(m=>m.Procedure)
+                .Include(m=>m.WireRodType)
+                //.Include(m=>m.ExceptionType)
+                
                 .Count(out var total)
                 .Page(page, size)
                 .ToListAsync();
